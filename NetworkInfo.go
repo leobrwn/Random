@@ -25,14 +25,12 @@ var webPorts = map[string]bool{
 	"8081": true, "8443": true, "8888": true,
 }
 
-// --- shell-out helpers ---
 
 func commandExists(name string) bool {
 	_, err := exec.LookPath(name)
 	return err == nil
 }
 
-// runCmd returns trimmed stdout, or "" if the binary is missing or the command fails.
 func runCmd(name string, args ...string) string {
 	if !commandExists(name) {
 		return ""
@@ -48,7 +46,6 @@ func isActive(service string) bool {
 	return exec.Command("systemctl", "is-active", "--quiet", service).Run() == nil
 }
 
-// --- report-writing helpers ---
 
 func field(label, value string) {
 	if value == "" {
@@ -73,7 +70,7 @@ func section(title string) {
 	fmt.Fprintf(&out, "\n--- %s ---\n", title)
 }
 
-// --- network overview ---
+
 
 func getDefaultRouteLine() []string {
 	lines := strings.Split(runCmd("ip", "route", "show", "default"), "\n")
@@ -154,7 +151,6 @@ func listActiveConnections() string {
 	return runCmd("nmcli", "-f", "NAME,TYPE,DEVICE", "connection", "show", "--active")
 }
 
-// --- DNS ---
 
 func readResolvConf() []string {
 	data, err := os.ReadFile("/etc/resolv.conf")
@@ -185,8 +181,6 @@ func getSearchDomains() string {
 	}
 	return strings.Join(domains, ", ")
 }
-
-// --- ports and services ---
 
 func listListeningTCP() string { return runCmd("ss", "-ltnp") }
 func listListeningUDP() string { return runCmd("ss", "-lunp") }
@@ -279,7 +273,6 @@ func listLocalWebPorts() string {
 	return strings.Join(lines, "\n")
 }
 
-// --- wireless ---
 
 func getWifiState() string { return runCmd("nmcli", "radio", "wifi") }
 
@@ -325,7 +318,7 @@ func listBluetoothDevices() string {
 	return runCmd("bluetoothctl", "devices")
 }
 
-// --- setup and output ---
+
 
 func parseArgs() {
 	switch len(os.Args) {
